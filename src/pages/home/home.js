@@ -8,9 +8,10 @@ import MovieList from "../../components/movieList/movieList";
 const Home = () => {
     const [popularMovies, setPopularMovies] = useState([]);
     const [error, setError] = useState(null);
+    const apiKey = "bb27e5f0"; // OMDB API key
 
     useEffect(() => {
-        fetch("https://www.omdbapi.com/?i=tt3896198&apikey=bb27e5f0")
+        fetch(`https://www.omdbapi.com/?s=popular&apikey=${apiKey}`)
             .then(res => {
                 if (!res.ok) {
                     throw new Error(`HTTP error! status: ${res.status}`);
@@ -18,9 +19,10 @@ const Home = () => {
                 return res.json();
             })
             .then(data => {
-                // Assuming the new API returns a list of movies in a specific format.
-                // Adjust this as per the actual response structure from the new API.
-                setPopularMovies([data]);
+                if (data.Response === "False") {
+                    throw new Error(data.Error);
+                }
+                setPopularMovies(data.Search || []);
             })
             .catch(err => {
                 console.error("Failed to fetch popular movies:", err);
@@ -49,7 +51,7 @@ const Home = () => {
                             >
                                 <div className="posterImage">
                                     <img
-                                        src={movie.Poster}
+                                        src={movie.Poster !== "N/A" ? movie.Poster : ""}
                                         alt={movie.Title}
                                     />
                                 </div>
@@ -58,10 +60,10 @@ const Home = () => {
                                         {movie.Title}
                                     </div>
                                     <div className="posterImage__runtime">
-                                        {movie.Released}
+                                        {movie.Year}
                                         <span className="posterImage__rating">
                                             {movie.imdbRating}
-                                            <i className="fas fa-star" />{" "}
+                                            <i className="fas fa-star" />
                                         </span>
                                     </div>
                                     <div className="posterImage__description">
@@ -76,6 +78,6 @@ const Home = () => {
             </div>
         </>
     );
-}
+};
 
 export default Home;
