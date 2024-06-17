@@ -1,55 +1,81 @@
-import React, { useEffect, useState } from "react"
-import "./home.css"
+import React, { useEffect, useState } from "react";
+import "./home.css";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from 'react-responsive-carousel';
 import { Link } from "react-router-dom";
 import MovieList from "../../components/movieList/movieList";
 
 const Home = () => {
-
-    const [ popularMovies, setPopularMovies ] = useState([])
+    const [popularMovies, setPopularMovies] = useState([]);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch("https://api.themoviedb.org/3/movie/popular?api_key=4e44d9029b1270a757cddc766a1bcb63&language=en-US")
-        .then(res => res.json())
-        .then(data => setPopularMovies(data.results))
-    }, [])
+        fetch("http://www.omdbapi.com/?i=tt3896198&apikey=bb27e5f0")
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                // Assuming the new API returns a list of movies in a specific format.
+                // Adjust this as per the actual response structure from the new API.
+                setPopularMovies([data]);
+            })
+            .catch(err => {
+                console.error("Failed to fetch popular movies:", err);
+                setError(err.message);
+            });
+    }, []);
 
     return (
         <>
             <div className="poster">
-                <Carousel
-                    showThumbs={false}
-                    autoPlay={true}
-                    transitionTime={3}
-                    infiniteLoop={true}
-                    showStatus={false}
-                >
-                    {
-                        popularMovies.map(movie => (
-                            <Link style={{textDecoration:"none",color:"white"}} to={`/movie/${movie.id}`} >
+                {error ? (
+                    <div className="error">{error}</div>
+                ) : (
+                    <Carousel
+                        showThumbs={false}
+                        autoPlay={true}
+                        transitionTime={3}
+                        infiniteLoop={true}
+                        showStatus={false}
+                    >
+                        {popularMovies.map(movie => (
+                            <Link
+                                key={movie.imdbID}
+                                style={{ textDecoration: "none", color: "white" }}
+                                to={`/movie/${movie.imdbID}`}
+                            >
                                 <div className="posterImage">
-                                    <img src={`https://image.tmdb.org/t/p/original${movie && movie.backdrop_path}`} />
+                                    <img
+                                        src={movie.Poster}
+                                        alt={movie.Title}
+                                    />
                                 </div>
                                 <div className="posterImage__overlay">
-                                    <div className="posterImage__title">{movie ? movie.original_title: ""}</div>
+                                    <div className="posterImage__title">
+                                        {movie.Title}
+                                    </div>
                                     <div className="posterImage__runtime">
-                                        {movie ? movie.release_date : ""}
+                                        {movie.Released}
                                         <span className="posterImage__rating">
-                                            {movie ? movie.vote_average :""}
+                                            {movie.imdbRating}
                                             <i className="fas fa-star" />{" "}
                                         </span>
                                     </div>
-                                    <div className="posterImage__description">{movie ? movie.overview : ""}</div>
+                                    <div className="posterImage__description">
+                                        {movie.Plot}
+                                    </div>
                                 </div>
                             </Link>
-                        ))
-                    }
-                </Carousel>
+                        ))}
+                    </Carousel>
+                )}
                 <MovieList />
             </div>
         </>
-    )
+    );
 }
 
-export default Home
+export default Home;
