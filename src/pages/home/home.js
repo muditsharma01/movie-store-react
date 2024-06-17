@@ -10,7 +10,7 @@ const Home = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch("http://www.omdbapi.com/?i=tt3896198&apikey=bb27e5f0")
+        fetch("https://www.omdbapi.com/?i=tt3896198&apikey=bb27e5f0")
             .then(res => {
                 if (!res.ok) {
                     throw new Error(`HTTP error! status: ${res.status}`);
