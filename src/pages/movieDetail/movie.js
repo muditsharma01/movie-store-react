@@ -12,7 +12,7 @@ const Movie = () => {
     }, []);
 
     const getData = () => {
-        fetch(`http://www.omdbapi.com/?i=${id}&apikey=bb27e5f0`)
+        fetch(`https://www.omdbapi.com/?i=${id}&apikey=bb27e5f0`)
             .then(res => res.json())
             .then(data => setMovie(data))
             .catch(err => console.error("Failed to fetch movie details:", err));
