@@ -15,7 +15,7 @@ const MovieList = () => {
     const getData = async () => {
         try {
             const query = type ? type : "popular"; // Default search term
-            const response = await fetch(`http://www.omdbapi.com/?s=${query}&apikey=${apiKey}`);
+            const response = await fetch(`https://www.omdbapi.com/?s=${query}&apikey=${apiKey}`);
             const data = await response.json();
             if (data.Search) {
                 setMovieList(data.Search);
